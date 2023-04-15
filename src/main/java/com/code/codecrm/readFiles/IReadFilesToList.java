@@ -6,6 +6,6 @@ import com.code.codecrm.Pojos.ConcPago;
 
 public interface IReadFilesToList {
 
-	public List<ConcPago> readFile(int positionField, String nameFile) throws Exception;
+	public List<ConcPago> readFile(String nameFile) throws Exception;
 
 }

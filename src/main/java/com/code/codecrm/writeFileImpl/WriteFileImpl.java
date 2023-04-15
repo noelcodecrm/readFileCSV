@@ -5,39 +5,38 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.temporal.ChronoField;
 import java.util.List;
-import java.util.Locale;
-import java.util.stream.Stream;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.code.codecrm.Pojos.ConcPago;
+import com.code.codecrm.utils.Utils;
 import com.code.codecrm.writeFile.IWriteFile;
 import com.opencsv.CSVWriter;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class WriteFileImpl implements IWriteFile {
 
 	private static String ROUTE = "C:/file/";
 
-	private static String NAME_FILE_WRITE = "outFile.csv";
+	private static String NAME_OUT_FILE_WRITE = "outFile.csv";
 
-	@Value("${proc.date.parseDefaulting}")
-	private Long parseDefaulting;
+	private static String NAME__OUT_FILE_SQL_WRITE_TXT = "sql.txt";
+	
+	@Autowired
+	private Utils utils;
 
 	@Override
 	public String witeFileFilter(List<ConcPago> resultSequeseFilter) throws Exception {
 
 		// escribe el resultado del filtro del archivo
-		CSVWriter writer = new CSVWriter(new FileWriter(ROUTE + NAME_FILE_WRITE));
+		CSVWriter writer = new CSVWriter(new FileWriter(ROUTE.concat(NAME_OUT_FILE_WRITE)));
 
 		resultSequeseFilter.stream().forEach(val -> {
-
-			Stream.of(val.getIdRegion());
 
 			String sg = val.getIdRegion().concat(",").concat(val.getTelefono()).concat(",").concat(val.getCuenta())
 					.concat(",").concat(val.getTotal()).concat(",").concat(val.getFechaHora().toString());
@@ -51,7 +50,7 @@ public class WriteFileImpl implements IWriteFile {
 
 		writer.close();
 		this.writeFileSql(resultSequeseFilter);
-
+		log.info("Termina la creación del archivo cvs: {}", ROUTE.concat(NAME_OUT_FILE_WRITE));
 		return null;
 	}
 
@@ -59,8 +58,7 @@ public class WriteFileImpl implements IWriteFile {
 	public String writeFileSql(List<ConcPago> resultSequeseFilter) throws Exception {
 		// TODO Auto-generated method stub
 
-		String ruta = "C:/file/filename.txt";
-		File file = new File(ruta);
+		File file = new File(ROUTE.concat(NAME__OUT_FILE_SQL_WRITE_TXT));
 		// Si el archivo no existe es creado
 		if (!file.exists()) {
 			file.createNewFile();
@@ -68,17 +66,10 @@ public class WriteFileImpl implements IWriteFile {
 		FileWriter fw = new FileWriter(file);
 		BufferedWriter bw = new BufferedWriter(fw);
 
-		DateTimeFormatterBuilder builder = new DateTimeFormatterBuilder().parseCaseInsensitive().parseLenient()
-				.parseDefaulting(ChronoField.YEAR_OF_ERA, this.parseDefaulting).appendPattern("[yyyy-MM-dd]")
-				.appendPattern("[M/dd/yyyy]").appendPattern("[M/d/yyyy]").appendPattern("[MM/dd/yyyy]")
-				.appendPattern("[MMM dd yyyy]").appendPattern("[dd/MM/yyyy]");
-
-		DateTimeFormatter formatter2 = builder.toFormatter(Locale.ENGLISH);
-
 		resultSequeseFilter.stream().forEach(val -> {
 			try {
 
-				LocalDate date = LocalDate.parse(val.getFechaHora(), formatter2);
+				LocalDate date = LocalDate.parse(val.getFechaHora(),this.utils.getDateValue(this.utils.parseDefaulting));
 
 				String sql = "update conc_pago2 set pago_bes= ".concat(val.getIdRegion())
 						.concat(" where date(fecha_hora)='").concat(date.toString()).concat("' and telefono = '")
@@ -88,13 +79,15 @@ public class WriteFileImpl implements IWriteFile {
 				bw.write(sql);
 				bw.newLine();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
+
+				log.error("Ocurrió un error al crear el archivo:  {}", e.getMessage());
+
 				e.printStackTrace();
 			}
 		});
 
 		bw.close();
-
+		log.info("Termina la creación del archivo txt->sql:  {}", ROUTE.concat(NAME__OUT_FILE_SQL_WRITE_TXT));
 		return null;
 	}
 

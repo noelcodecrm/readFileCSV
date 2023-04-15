@@ -2,73 +2,67 @@ package com.code.codecrm.readFilesImpl;
 
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
 import com.code.codecrm.Pojos.ConcPago;
 import com.code.codecrm.readFiles.IReadFilesToList;
+import com.code.codecrm.utils.Numbers;
 import com.opencsv.CSVReader;
 
+import ch.qos.logback.classic.pattern.Util;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Repository
-public class ReadFilesToListImpl implements IReadFilesToList {
+public class ReadFilesToListImpl extends Util implements IReadFilesToList {
 
 	private static String ROUTE = "C:/file/";
 
-	@Value("${proc.field.position0}")
-	private int position0;
-	@Value("${proc.field.position1}")
-	private int position1;
-	@Value("${proc.field.position2}")
-	private int position2;
-	@Value("${proc.field.position3}")
-	private int position3;
-	@Value("${proc.field.position4}")
-	private int position4;
+	@Value("${proc.field.position.region}")
+	private int region;
+	@Value("${proc.field.position.telefono}")
+	private int telefono;
+	@Value("${proc.field.position.cuenta}")
+	private int cuenta;
+	@Value("${proc.field.position.total}")
+	private int total;
+	@Value("${proc.field.position.fechahora}")
+	private int fechahora;
 
 	@Override
-	public List<ConcPago> readFile(int positionField, String nameFile) throws Exception {
+	public List<ConcPago> readFile(String nameFile) throws Exception {
 
 		String[] nextLine = null;
 
 		CSVReader reader = this.readFiles(nameFile);
 
 		// lista para guaradar los registros en posicion de la columna ingresada
-
 		List<ConcPago> sequenceConcPago = new ArrayList<>();
 
 		while ((nextLine = reader.readNext()) != null) {
 
-			if (!nextLine[0].isEmpty()) {
-				// busca la posición del campo del archivo
-				// sequenceFieldFile.add(nextLine[positionField]);
+			if (!nextLine[Numbers.ZERO.getValue()].isEmpty()) {
 
 				ConcPago concPago = new ConcPago();
-				concPago.setIdRegion(nextLine[this.position0]);
-				concPago.setTelefono(nextLine[this.position1]);
-				concPago.setCuenta(nextLine[this.position2]);
-				concPago.setTotal(nextLine[this.position3]);
-				
-//				DateTimeFormatter formmater = DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
-//				DateTime date = DateTime.parse(nextLine[this.position4],formmater);
-				concPago.setFechaHora(nextLine[this.position4]);
+
+				// busca la posición del campo del archivo
+				concPago.setIdRegion(nextLine[this.region]);
+				concPago.setTelefono(nextLine[this.telefono]);
+				concPago.setCuenta(nextLine[this.cuenta]);
+				concPago.setTotal(nextLine[this.total]);
+				concPago.setFechaHora(nextLine[this.fechahora]);
 
 				// asigna el objeto a la
 				sequenceConcPago.add(concPago);
 			}
 		}
 		reader.close();
-
-		// sequenceFieldFile.removeIf(p -> p.contentEquals(""));
-
+		log.info("Se encontraron en total de registros: {}", sequenceConcPago.size());
+		log.info("Se terminó de leer el archivo: {}", nameFile);
 		return sequenceConcPago;
 	}
 
@@ -77,7 +71,9 @@ public class ReadFilesToListImpl implements IReadFilesToList {
 		CSVReader reader = null;
 
 		// lectura del archivo en disco c:/file/
-		reader = new CSVReader(new FileReader(ROUTE + nameFile));
+		reader = new CSVReader(new FileReader(ROUTE.concat(nameFile)));
+
+		log.info("Leyendo archivo: {}", ROUTE.concat(nameFile));
 
 		return reader;
 

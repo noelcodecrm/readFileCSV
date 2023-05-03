@@ -2,6 +2,7 @@ package com.code.codecrm.readFilesImpl;
 
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +33,8 @@ public class ReadFilesToListImpl extends Util implements IReadFilesToList {
 	private int total;
 	@Value("${proc.field.position.fechahora}")
 	private int fechahora;
+	@Value("${proc.field.position.default}")
+	private int defaultPos;
 
 	@Override
 	public List<ConcPago> readFile(String nameFile) throws Exception {
@@ -53,8 +56,9 @@ public class ReadFilesToListImpl extends Util implements IReadFilesToList {
 				concPago.setIdRegion(nextLine[this.region]);
 				concPago.setTelefono(nextLine[this.telefono]);
 				concPago.setCuenta(nextLine[this.cuenta]);
-				concPago.setTotal(nextLine[this.total]);
+				concPago.setTotal(new BigDecimal(nextLine[this.total]));
 				concPago.setFechaHora(nextLine[this.fechahora]);
+				concPago.setDefault5(nextLine[this.defaultPos]);
 
 				// asigna el objeto a la
 				sequenceConcPago.add(concPago);

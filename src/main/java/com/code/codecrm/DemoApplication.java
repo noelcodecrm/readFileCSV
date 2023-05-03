@@ -30,7 +30,9 @@ public class DemoApplication implements CommandLineRunner {
 			long startTime = System.nanoTime();
 			log.info("Inicia proceso a las: " + startTime/1000000L);
 			
-			this.fileService.file(args[Numbers.ZERO.getValue()].split(","));
+			int action = 1;
+			
+			this.fileService.file(args[Numbers.ZERO.getValue()].split(","),action);
 			
 			long endTime = System.nanoTime();
 			long timeElapsed = endTime - startTime;

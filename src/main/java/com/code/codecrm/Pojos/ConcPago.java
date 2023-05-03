@@ -1,7 +1,7 @@
 package com.code.codecrm.Pojos;
 
 
-import java.util.Date;
+import java.math.BigDecimal;
 
 import lombok.Data;
 
@@ -12,6 +12,7 @@ public class ConcPago {
 	private String idRegion;
 	private String telefono;
 	private String cuenta;
-	private String total;
+	private BigDecimal total;
 	private String fechaHora;
+	private String default5;
 }

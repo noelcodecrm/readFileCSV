@@ -39,7 +39,7 @@ public class WriteFileImpl implements IWriteFile {
 		resultSequeseFilter.stream().forEach(val -> {
 
 			String sg = val.getIdRegion().concat(",").concat(val.getTelefono()).concat(",").concat(val.getCuenta())
-					.concat(",").concat(val.getTotal()).concat(",").concat(val.getFechaHora().toString());
+					.concat(",").concat(val.getTotal().toString()).concat(",").concat(val.getFechaHora().toString().concat(",").concat(val.getDefault5()));
 
 			String[] record = sg.split(",");
 
@@ -71,7 +71,7 @@ public class WriteFileImpl implements IWriteFile {
 
 				LocalDate date = LocalDate.parse(val.getFechaHora(),this.utils.getDateValue(this.utils.parseDefaulting));
 
-				String sql = "update conc_pago2 set pago_bes= ".concat(val.getIdRegion())
+				String sql = "update conc_pago2 set pago_bes= 3"
 						.concat(" where date(fecha_hora)='").concat(date.toString()).concat("' and telefono = '")
 						.concat(val.getTelefono()).concat("' and id_concepto=").concat("101").concat(" and id_region= ")
 						.concat(val.getIdRegion()).concat(",");

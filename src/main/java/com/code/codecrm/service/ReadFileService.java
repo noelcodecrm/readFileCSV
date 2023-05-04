@@ -74,7 +74,7 @@ public class ReadFileService {
 							.anyMatch(tele -> tele.equals(e.getDefault5())))
 					.collect(Collectors.toList());
 			
-			//List<ConcPago> nuevo =  result.stream().filter(distinctByKey(p -> p.getDefault5().trim())).collect(Collectors.toList());
+		//	List<ConcPago> nuevo =  result.stream().filter(distinctByKey(p -> p.getDefault5().trim())).collect(Collectors.toList());
 
 			log.info("Se encontraron en total que se encuentran en el segundo archivo: {}",
 					result.size());

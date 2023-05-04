@@ -1,6 +1,7 @@
 package com.code.codecrm;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -14,13 +15,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @SpringBootApplication
 @ComponentScan("com.code.codecrm")
-public class DemoApplication implements CommandLineRunner {
+public class ReadFileCSVApplication implements CommandLineRunner {
 
 	@Autowired
 	private ReadFileService fileService;
+	
+	@Value("${proc.action.value}")
+	private int actionValue;
 
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(DemoApplication.class, args);
+		SpringApplication.run(ReadFileCSVApplication.class, args);
 	}
 
 	@Override
@@ -30,9 +34,7 @@ public class DemoApplication implements CommandLineRunner {
 			long startTime = System.nanoTime();
 			log.info("Inicia proceso a las: " + startTime/1000000L);
 			
-			int action = 1;
-			
-			this.fileService.file(args[Numbers.ZERO.getValue()].split(","),action);
+			this.fileService.file(args[Numbers.ZERO.getValue()].split(","),this.actionValue);
 			
 			long endTime = System.nanoTime();
 			long timeElapsed = endTime - startTime;

@@ -1,15 +1,21 @@
 package com.code.codecrm.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -57,60 +63,35 @@ public class ReadFileService {
 			// remueve los registros que se encuentran en el segundo archivo
 			resultSequencesFileOne.removeIf(
 					a -> resultSequencesFileTwo.stream().anyMatch(b -> a.getTelefono().trim().equals(b.getTelefono().trim())));
-			break;
+			
+			result = resultSequencesFileOne;
+			return result;
 		case 2:
 			
+			result = resultSequencesFileTwo.stream()
+					.filter(e -> resultSequencesFileOne.stream()
+							.map(ConcPago::getDefault5)
+							.anyMatch(tele -> tele.equals(e.getDefault5())))
+					.collect(Collectors.toList());
 			
-			for (ConcPago concPagoOne : resultSequencesFileOne) {
-				
-				for (ConcPago concPago2 : resultSequencesFileTwo) {
-					ConcPago concPago = new ConcPago();
-					
-				  if(concPagoOne.getTelefono().trim().equals(concPago2.getTelefono().trim())) {
-					concPago.setCuenta(concPago2.getCuenta());  
-					concPago.setFechaHora(concPago2.getFechaHora());
-					concPago.setIdRegion(concPago2.getIdRegion());
-					concPago.setTotal(concPago2.getTotal());
-					concPago.setTelefono(concPago2.getTelefono().trim());
-					concPago.setDefault5(concPago2.getDefault5().trim());
-					result.add(concPago);
-				  }
-				 
-				}
-			}
-			
-			
-			
-			
-			
-			
-			
-//			resultSequencesFileTwo.stream().findFirst().filter(a -> a.getTelefono().equals(contains));
+			//List<ConcPago> nuevo =  result.stream().filter(distinctByKey(p -> p.getDefault5().trim())).collect(Collectors.toList());
 
-
-			break;
-
+			log.info("Se encontraron en total que se encuentran en el segundo archivo: {}",
+					result.size());
+			
+			return result;
+			
 		default:
 
 		}
 		
-//		Set<ConcPago> set = new LinkedHashSet<>(result);
-//		
-//		List<ConcPago> result2 = new ArrayList<>(set);
-		
-		List<ConcPago> nuevo =  result.stream().filter(distinctByKey(p -> p.getTelefono())).collect(Collectors.toList());
-
-		log.info("Se encontraron en total de registros que no tienen en el segundo archivo: {}",
-				nuevo.size());
-
-		return resultSequencesFileOne;
+		return result;
 	}
-	
 	
 	public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) 
 	{
 	    Map<Object, Boolean> map = new ConcurrentHashMap<>();
 	    return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
 	}
-
+	
 }

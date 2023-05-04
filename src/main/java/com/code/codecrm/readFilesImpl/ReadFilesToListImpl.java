@@ -49,6 +49,9 @@ public class ReadFilesToListImpl extends Util implements IReadFilesToList {
 	private int fechahoraFileTwo;
 	@Value("${proc.field.position.filetwo.default}")
 	private int defaultPosFileTwo;
+	
+	@Value("${proc.file.evaluate.name}")
+	private String fileEvaluateName;
 
 	@Override
 	public List<ConcPago> readFile(String nameFile) throws Exception {
@@ -67,7 +70,7 @@ public class ReadFilesToListImpl extends Util implements IReadFilesToList {
 				ConcPago concPago = new ConcPago();
 				
 				// valida si el nombre del archivo pertenece al primer invocado
-				Predicate<String> condition = Predicate.isEqual("file1.csv");
+				Predicate<String> condition = Predicate.isEqual(this.fileEvaluateName);
 
 				// busca la posición del campo del archivo
 				concPago.setIdRegion(condition.test(nameFile) ? nextLine[this.region] : nextLine[this.regionFileTwo]);

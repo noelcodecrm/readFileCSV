@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 import com.code.codecrm.service.ReadFileService;
-import com.code.codecrm.utils.Numbers;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,6 +21,14 @@ public class ReadFileCSVApplication implements CommandLineRunner {
 	
 	@Value("${proc.action.value}")
 	private int actionValue;
+	
+	@Value("${proc.file.name.one}")
+	private String fileNameOne;
+	
+	@Value("${proc.file.name.two}")
+	private String fileNameTwo;
+	
+	
 
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(ReadFileCSVApplication.class, args);
@@ -34,7 +41,7 @@ public class ReadFileCSVApplication implements CommandLineRunner {
 			long startTime = System.nanoTime();
 			log.info("Inicia proceso a las: " + startTime/1000000L);
 			
-			this.fileService.file(args[Numbers.ZERO.getValue()].split(","),this.actionValue);
+			this.fileService.file(this.fileNameOne, this.fileNameTwo, this.actionValue);
 			
 			long endTime = System.nanoTime();
 			long timeElapsed = endTime - startTime;
